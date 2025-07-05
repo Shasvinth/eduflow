@@ -1,36 +1,154 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EduFlow - Modern Learning Management System
 
-## Getting Started
+A comprehensive, modern Learning Management System (LMS) built with Next.js 15, Firebase, and TypeScript. EduFlow provides a complete platform for online education with features for students, instructors, and administrators.
 
-First, run the development server:
+## 🚀 Features
 
+### 👨‍🎓 For Students
+- **Course Discovery**: Browse and search through hundreds of courses
+- **Interactive Learning**: Engage with video content, quizzes, and assignments
+- **Progress Tracking**: Monitor your learning progress with detailed analytics
+- **Certificates**: Earn industry-recognized certificates upon course completion
+- **Mobile Responsive**: Learn anywhere, anytime on any device
+
+### 👨‍🏫 For Instructors
+- **Course Creation**: Build comprehensive courses with lessons, quizzes, and assignments
+- **Student Management**: Track student progress and engagement
+- **Content Upload**: Support for videos, documents, and interactive content
+- **Analytics Dashboard**: Detailed insights into course performance
+
+### 🔧 Technical Features
+- **Authentication**: Secure Firebase Auth with role-based access
+- **Real-time Database**: Firestore for scalable data management
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **TypeScript**: Full type safety throughout the application
+- **Modern UI**: Beautiful components built with Radix UI
+- **Progressive Web App**: Offline capabilities and app-like experience
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI
+- **Authentication**: Firebase Auth
+- **Database**: Firestore
+- **Hosting**: Firebase Hosting
+- **Forms**: React Hook Form with Zod validation
+- **Icons**: Lucide React
+- **Package Manager**: pnpm
+
+## 🚀 Quick Start
+
+### 1. Install Dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Firebase Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### Create a Firebase Project
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Click "Create a project" or "Add project"
+3. Enter project name (e.g., "eduflow-lms")
+4. Enable Google Analytics (optional)
+5. Create project
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+#### Enable Authentication
+1. In Firebase Console, go to Authentication
+2. Click "Get started"
+3. Go to "Sign-in method" tab
+4. Enable "Email/Password" provider
+5. Save
 
-## Learn More
+#### Set up Firestore Database
+1. In Firebase Console, go to Firestore Database
+2. Click "Create database"
+3. Choose "Start in test mode" (for development)
+4. Select a location close to your users
+5. Done
 
-To learn more about Next.js, take a look at the following resources:
+#### Get Firebase Config
+1. Go to Project Settings (gear icon)
+2. Copy the Firebase config object
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Environment Configuration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create a `.env.local` file:
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+```
 
-## Deploy on Vercel
+### 4. Run Development Server
+```bash
+pnpm dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Deployment
+
+### Build for Production
+```bash
+pnpm build
+```
+
+### Export for Static Hosting
+```bash
+# Add to next.config.ts for static export
+# Then run:
+pnpm build
+```
+
+### Deploy to Firebase Hosting
+```bash
+# Install Firebase CLI
+npm install -g firebase-tools
+
+# Login and initialize
+firebase login
+firebase init hosting
+
+# Deploy
+firebase deploy
+```
+
+## 📚 Usage
+
+### Demo Accounts
+- **Student**: Sign up as a student to browse and enroll in courses
+- **Instructor**: Sign up as an instructor to create and manage courses
+
+### Key Features
+1. **User Registration**: Sign up as student or instructor
+2. **Course Browsing**: Explore available courses by category
+3. **Course Enrollment**: Enroll in courses and track progress
+4. **Learning Dashboard**: View enrolled courses and progress
+
+## 🎨 Customization
+
+The application uses Tailwind CSS with custom CSS variables for theming. You can modify colors and styling in:
+- `src/app/globals.css` - Global styles and theme variables
+- Components use consistent design tokens
+
+## 🔒 Security
+
+- Firebase Authentication provides secure user management
+- Firestore security rules ensure data protection
+- Role-based access control for different user types
+- Environment variables protect sensitive configuration
+
+## 📱 Mobile Support
+
+EduFlow is built with a mobile-first approach:
+- Responsive design that works on all screen sizes
+- Touch-friendly interface
+- Optimized performance for mobile devices
+- Progressive Web App capabilities
+
+Built with ❤️ using Next.js, Firebase, and TypeScript

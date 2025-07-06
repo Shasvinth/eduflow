@@ -24,18 +24,42 @@ import {
 import { 
   doc, 
   getDoc, 
-  updateDoc
+  updateDoc,
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  addDoc,
+  deleteDoc
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Course } from '@/types';
+import { Course, Lesson } from '@/types';
 
 export default function EditCoursePage({ params }: { params: Promise<{ id: string }> }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
+  const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
   const [courseId, setCourseId] = useState<string | null>(null);
+  const [showAddLesson, setShowAddLesson] = useState(false);
+  const [newLesson, setNewLesson] = useState<{
+    title: string;
+    description: string;
+    content: string;
+    videoUrl: string;
+    attachments: Array<{ name: string; type: string; data: string; size: number; }>;
+    isPreview: boolean;
+  }>({
+    title: '',
+    description: '',
+    content: '',
+    videoUrl: '',
+    attachments: [],
+    isPreview: false
+  });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -68,6 +92,19 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
         }
         
         setCourse(courseData);
+
+        // Fetch lessons for this course
+        const lessonsQuery = query(
+          collection(db, 'lessons'),
+          where('courseId', '==', courseId),
+          orderBy('order', 'asc')
+        );
+        const lessonsSnap = await getDocs(lessonsQuery);
+        const lessonsData = lessonsSnap.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Lesson[];
+        setLessons(lessonsData);
       } else {
         router.push('/dashboard/instructor');
       }
@@ -90,6 +127,45 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
 
     fetchCourseData();
   }, [user, courseId, router, fetchCourse]);
+
+  const addLesson = async () => {
+    if (!courseId || !newLesson.title.trim()) return;
+
+    try {
+      const lessonData = {
+        ...newLesson,
+        courseId,
+        order: lessons.length + 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      const docRef = await addDoc(collection(db, 'lessons'), lessonData);
+      const addedLesson = { id: docRef.id, ...lessonData } as Lesson;
+      
+      setLessons(prev => [...prev, addedLesson]);
+      setNewLesson({
+        title: '',
+        description: '',
+        content: '',
+        videoUrl: '',
+        attachments: [],
+        isPreview: false
+      });
+      setShowAddLesson(false);
+    } catch (error) {
+      console.error('Error adding lesson:', error);
+    }
+  };
+
+  const deleteLesson = async (lessonId: string) => {
+    try {
+      await deleteDoc(doc(db, 'lessons', lessonId));
+      setLessons(prev => prev.filter(lesson => lesson.id !== lessonId));
+    } catch (error) {
+      console.error('Error deleting lesson:', error);
+    }
+  };
 
   const handleInputChange = (field: keyof Course, value: string | string[]) => {
     if (course) {
@@ -436,6 +512,223 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
                   </div>
                 ))}
               </div>
+            </motion.div>
+
+            {/* Lesson Management */}
+            <motion.div 
+              className="bg-white/60 backdrop-blur-md border border-white/30 rounded-2xl p-6 shadow-xl"
+              variants={itemVariants}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                  <BookOpen className="h-5 w-5 mr-2" />
+                  Course Lessons
+                </h2>
+                <Button
+                  onClick={() => setShowAddLesson(true)}
+                  size="sm"
+                  variant="outline"
+                  className="bg-white/50 border-white/30 hover:bg-white/70"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Lesson
+                </Button>
+              </div>
+
+              {/* Existing Lessons */}
+              <div className="space-y-4 mb-6">
+                {lessons.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <BookOpen size={48} className="mx-auto mb-4 opacity-50" />
+                    <p>No lessons added yet. Create your first lesson to get started!</p>
+                  </div>
+                ) : (
+                  lessons.map((lesson, index) => (
+                    <div key={lesson.id} className="bg-gray-50/50 rounded-xl p-4 border border-gray-200">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                              Lesson {index + 1}
+                            </span>
+                            {lesson.isPreview && (
+                              <span className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
+                                Preview
+                              </span>
+                            )}
+                          </div>
+                          <h3 className="font-semibold text-gray-900 mb-1">{lesson.title}</h3>
+                          <p className="text-sm text-gray-600 mb-2">{lesson.description}</p>
+                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                            {lesson.videoUrl && <span>Has video</span>}
+                            {lesson.content && <span>• Has content</span>}
+                            {lesson.attachments && lesson.attachments.length > 0 && <span>• Has attachments</span>}
+                          </div>
+                        </div>
+                        <Button
+                          onClick={() => deleteLesson(lesson.id)}
+                          size="sm"
+                          variant="outline"
+                          className="bg-red-50 border-red-200 hover:bg-red-100 text-red-600"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Add New Lesson Form */}
+              {showAddLesson && (
+                <div className="bg-blue-50/50 rounded-xl p-6 border border-blue-200">
+                  <h3 className="font-semibold text-gray-900 mb-4">Add New Lesson</h3>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Lesson Title *
+                        </label>
+                        <Input
+                          value={newLesson.title}
+                          onChange={(e) => setNewLesson(prev => ({ ...prev, title: e.target.value }))}
+                          placeholder="Enter lesson title"
+                          className="bg-white/50 border-white/30 focus:bg-white/70"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Attachments
+                        </label>
+                        <input
+                          type="file"
+                          multiple
+                          accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif"
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files || []);
+                            files.forEach(file => {
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                const attachment = {
+                                  name: file.name,
+                                  type: file.type,
+                                  data: reader.result as string,
+                                  size: file.size
+                                };
+                                setNewLesson(prev => ({ 
+                                  ...prev, 
+                                  attachments: [...prev.attachments, attachment] 
+                                }));
+                              };
+                              reader.readAsDataURL(file);
+                            });
+                          }}
+                          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
+                        />
+                        {newLesson.attachments.length > 0 && (
+                          <div className="mt-2 space-y-2">
+                            {newLesson.attachments.map((file, index) => (
+                              <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                                <span className="text-sm">{file.name}</span>
+                                <button
+                                  onClick={() => {
+                                    setNewLesson(prev => ({
+                                      ...prev,
+                                      attachments: prev.attachments.filter((_, i) => i !== index)
+                                    }));
+                                  }}
+                                  className="text-red-500 hover:text-red-700"
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                      </label>
+                      <textarea
+                        value={newLesson.description}
+                        onChange={(e) => setNewLesson(prev => ({ ...prev, description: e.target.value }))}
+                        rows={3}
+                        className="w-full px-4 py-3 bg-white/50 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:bg-white/70 text-gray-900"
+                        placeholder="Describe what this lesson covers..."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Video URL (optional)
+                      </label>
+                      <Input
+                        value={newLesson.videoUrl}
+                        onChange={(e) => setNewLesson(prev => ({ ...prev, videoUrl: e.target.value }))}
+                        placeholder="https://example.com/video.mp4"
+                        className="bg-white/50 border-white/30 focus:bg-white/70"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Lesson Content
+                      </label>
+                      <textarea
+                        value={newLesson.content}
+                        onChange={(e) => setNewLesson(prev => ({ ...prev, content: e.target.value }))}
+                        rows={6}
+                        className="w-full px-4 py-3 bg-white/50 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:bg-white/70 text-gray-900"
+                        placeholder="Enter the lesson content, notes, or instructions..."
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="isPreview"
+                        checked={newLesson.isPreview}
+                        onChange={(e) => setNewLesson(prev => ({ ...prev, isPreview: e.target.checked }))}
+                        className="rounded border-gray-300"
+                      />
+                      <label htmlFor="isPreview" className="text-sm text-gray-700">
+                        Make this a preview lesson (accessible to non-enrolled students)
+                      </label>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={addLesson}
+                        disabled={!newLesson.title.trim()}
+                        className="bg-gradient-to-r from-gray-700 to-gray-800 text-white hover:from-gray-800 hover:to-gray-900"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Lesson
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setShowAddLesson(false);
+                          setNewLesson({
+                            title: '',
+                            description: '',
+                            content: '',
+                            videoUrl: '',
+                            attachments: [],
+                            isPreview: false
+                          });
+                        }}
+                        variant="outline"
+                        className="bg-white/50 border-white/30 hover:bg-white/70"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
 
             {/* Actions */}

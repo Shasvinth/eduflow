@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { doc, getDoc, collection, query, where, getDocs, updateDoc, orderBy } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, updateDoc, orderBy, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Course, Lesson, Enrollment } from '@/types';
+import { Course, Lesson, Enrollment, Discussion } from '@/types';
 import { motion } from 'framer-motion';
+import Header from '@/components/Header';
 import { 
   ArrowLeft, 
   Play, 
@@ -17,7 +18,6 @@ import {
   MessageCircle,
   BarChart3,
   Book,
-  Clock,
   Lock,
   Unlock
 } from 'lucide-react';
@@ -32,6 +32,11 @@ export default function CourseLearningPage() {
   const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showQuestionForm, setShowQuestionForm] = useState(false);
+  const [questionData, setQuestionData] = useState({
+    content: ''
+  });
+  const [discussions, setDiscussions] = useState<Discussion[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,8 +104,67 @@ export default function CourseLearningPage() {
       }
     };
 
-    fetchData();
+    if (user) {
+      fetchData();
+    }
   }, [id, user, router]);
+
+  // Fetch discussions when current lesson changes
+  useEffect(() => {
+    if (currentLesson) {
+      fetchDiscussions(currentLesson.id);
+    }
+  }, [currentLesson]);
+
+  const fetchDiscussions = async (lessonId: string) => {
+    try {
+      const discussionsQuery = query(
+        collection(db, 'discussions'),
+        where('lessonId', '==', lessonId),
+        orderBy('createdAt', 'desc')
+      );
+      const discussionsSnap = await getDocs(discussionsQuery);
+      const discussionsData = discussionsSnap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Discussion[];
+      setDiscussions(discussionsData);
+    } catch (error) {
+      console.error('Error fetching discussions:', error);
+    }
+  };
+
+  const submitQuestion = async () => {
+    if (!currentLesson || !user || !questionData.content.trim()) return;
+
+    try {
+      const discussionData = {
+        lessonId: currentLesson.id,
+        courseId: id as string,
+        title: questionData.content.length > 50 ? questionData.content.substring(0, 50) + '...' : questionData.content,
+        content: questionData.content,
+        authorId: user.id,
+        authorName: user.displayName || 'Anonymous',
+        authorRole: user.role,
+        replies: [],
+        isQuestion: true,
+        isAnswered: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      await addDoc(collection(db, 'discussions'), discussionData);
+      
+      setQuestionData({ content: '' });
+      setShowQuestionForm(false);
+      
+      // Refresh discussions for current lesson
+      await fetchDiscussions(currentLesson.id);
+      
+    } catch (error) {
+      console.error('Error submitting question:', error);
+    }
+  };
 
   const markLessonComplete = async (lessonId: string) => {
     if (!enrollment || !user) return;
@@ -186,34 +250,36 @@ export default function CourseLearningPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200/50 px-4 py-4 sticky top-0 z-40">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push(`/courses/${id}`)}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
-            >
-              <ArrowLeft size={20} />
-              <span className="hidden sm:inline">Back to Course</span>
-            </button>
-            <div>
-              <h1 className="text-lg font-semibold text-gray-800 truncate max-w-xs sm:max-w-sm md:max-w-md">
-                {course.title}
-              </h1>
-              <p className="text-sm text-gray-600">Progress: {enrollment.progress}%</p>
+    <div>
+      <Header />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 pt-20">
+        {/* Course Navigation */}
+        <div className="bg-white/80 backdrop-blur-lg border-b border-gray-200/50 px-4 py-4 sticky top-20 z-40">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => router.push(`/courses/${id}`)}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                <ArrowLeft size={20} />
+                <span className="hidden sm:inline">Back to Course</span>
+              </button>
+              <div>
+                <h1 className="text-lg font-semibold text-gray-800 truncate max-w-xs sm:max-w-sm md:max-w-md">
+                  {course.title}
+                </h1>
+                <p className="text-sm text-gray-600">Progress: {enrollment.progress}%</p>
+              </div>
             </div>
+            
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              <Book size={20} />
+            </button>
           </div>
-          
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="lg:hidden p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
-          >
-            <Book size={20} />
-          </button>
         </div>
-      </header>
 
       <div className="flex">
         {/* Sidebar - Course Content */}
@@ -291,10 +357,12 @@ export default function CourseLearningPage() {
                             {lesson.title}
                           </h3>
                           <div className="flex items-center gap-4 text-xs text-gray-500">
-                            <div className="flex items-center gap-1">
-                              <Play size={12} />
-                              <span>{lesson.duration} min</span>
-                            </div>
+                            {lesson.videoUrl && (
+                              <div className="flex items-center gap-1">
+                                <Play size={12} />
+                                <span>Video</span>
+                              </div>
+                            )}
                             {lesson.isPreview && (
                               <span className="px-2 py-1 bg-blue-100 text-blue-600 rounded-full">
                                 Preview
@@ -324,12 +392,22 @@ export default function CourseLearningPage() {
                 {/* Video Player */}
                 <div className="relative aspect-video bg-gray-900">
                   {currentLesson.videoUrl ? (
-                    <video
-                      src={currentLesson.videoUrl}
-                      controls
-                      className="w-full h-full"
-                      poster={course.thumbnail}
-                    />
+                    currentLesson.videoUrl.includes('youtube.com') || currentLesson.videoUrl.includes('youtu.be') ? (
+                      <iframe
+                        src={currentLesson.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        title={currentLesson.title}
+                      />
+                    ) : (
+                      <video
+                        src={currentLesson.videoUrl}
+                        controls
+                        className="w-full h-full"
+                        poster={course.thumbnail}
+                      />
+                    )
                   ) : (
                     <div className="flex items-center justify-center h-full">
                       <div className="text-center text-white">
@@ -351,10 +429,12 @@ export default function CourseLearningPage() {
                         {currentLesson.title}
                       </h1>
                       <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <Clock size={16} />
-                          <span>{currentLesson.duration} minutes</span>
-                        </div>
+                        {currentLesson.videoUrl && (
+                          <div className="flex items-center gap-1">
+                            <Play size={16} />
+                            <span>Video Available</span>
+                          </div>
+                        )}
                         {currentLesson.isPreview && (
                           <span className="px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs">
                             Preview Lesson
@@ -408,9 +488,18 @@ export default function CourseLearningPage() {
                           >
                             <div className="flex items-center gap-3">
                               <FileText size={20} className="text-gray-600" />
-                              <span className="text-gray-800">{attachment}</span>
+                              <span className="text-gray-800">{attachment.name}</span>
+                              <span className="text-xs text-gray-500">({(attachment.size / 1024).toFixed(1)} KB)</span>
                             </div>
-                            <button className="p-2 text-gray-600 hover:text-gray-800 transition-colors">
+                            <button 
+                              onClick={() => {
+                                const link = document.createElement('a');
+                                link.href = attachment.data;
+                                link.download = attachment.name;
+                                link.click();
+                              }}
+                              className="p-2 text-gray-600 hover:text-gray-800 transition-colors"
+                            >
                               <Download size={16} />
                             </button>
                           </div>
@@ -423,16 +512,108 @@ export default function CourseLearningPage() {
                   <div className="border-t border-gray-200 pt-8">
                     <div className="flex items-center justify-between mb-6">
                       <h2 className="text-xl font-semibold text-gray-800">Discussion</h2>
-                      <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-2xl transition-colors">
+                      <button 
+                        onClick={() => setShowQuestionForm(!showQuestionForm)}
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-white hover:from-gray-800 hover:to-gray-900 rounded-2xl transition-colors"
+                      >
                         <MessageCircle size={16} />
                         <span>Ask a Question</span>
                       </button>
                     </div>
-                    <div className="text-center py-8 text-gray-600">
-                      <MessageCircle size={48} className="mx-auto mb-4 opacity-50" />
-                      <p>No discussions yet for this lesson.</p>
-                      <p className="text-sm mt-2">Be the first to start a conversation!</p>
-                    </div>
+
+                    {/* Question Form */}
+                    {showQuestionForm && (
+                      <div className="mb-6 p-6 bg-gray-50/50 backdrop-blur-sm rounded-2xl border border-gray-200/50">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Ask a Question</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              What&apos;s your question?
+                            </label>
+                            <textarea
+                              value={questionData.content}
+                              onChange={(e) => setQuestionData(prev => ({ ...prev, content: e.target.value }))}
+                              placeholder="Type your question here..."
+                              rows={4}
+                              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500"
+                            />
+                          </div>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={submitQuestion}
+                              disabled={!questionData.content.trim()}
+                              className="px-6 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-2xl hover:from-gray-800 hover:to-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Submit Question
+                            </button>
+                            <button
+                              onClick={() => {
+                                setShowQuestionForm(false);
+                                setQuestionData({ content: '' });
+                              }}
+                              className="px-6 py-2 bg-gray-200 text-gray-700 rounded-2xl hover:bg-gray-300 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {discussions.length > 0 ? (
+                      <div className="space-y-4">
+                        {discussions.map((discussion) => (
+                          <div key={discussion.id} className="p-4 bg-gray-50/50 backdrop-blur-sm rounded-2xl border border-gray-200/50">
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-gray-800">{discussion.authorName}</span>
+                                <span className="text-xs text-gray-500 px-2 py-1 bg-gray-200 rounded-full">
+                                  {discussion.authorRole}
+                                </span>
+                                {discussion.isQuestion && (
+                                  <span className="text-xs text-blue-600 px-2 py-1 bg-blue-100 rounded-full">
+                                    Question
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-xs text-gray-500">
+                                {discussion.createdAt instanceof Date 
+                                  ? discussion.createdAt.toLocaleDateString() 
+                                  : discussion.createdAt && typeof discussion.createdAt === 'object' && 'toDate' in discussion.createdAt
+                                    ? (discussion.createdAt as { toDate: () => Date }).toDate().toLocaleDateString() 
+                                    : 'Recently'}
+                              </span>
+                            </div>
+                            <p className="text-gray-700 leading-relaxed">{discussion.content}</p>
+                            {discussion.replies && discussion.replies.length > 0 && (
+                              <div className="mt-3 pl-4 border-l-2 border-gray-200 space-y-2">
+                                {discussion.replies.map((reply, index) => (
+                                  <div key={index} className="p-2 bg-white rounded-lg">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <span className="text-sm font-medium text-gray-700">{reply.authorName}</span>
+                                      <span className="text-xs text-gray-500">
+                                        {reply.createdAt instanceof Date 
+                                          ? reply.createdAt.toLocaleDateString() 
+                                          : reply.createdAt && typeof reply.createdAt === 'object' && 'toDate' in reply.createdAt
+                                            ? (reply.createdAt as { toDate: () => Date }).toDate().toLocaleDateString() 
+                                            : 'Recently'}
+                                      </span>
+                                    </div>
+                                    <p className="text-sm text-gray-600">{reply.content}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-600">
+                        <MessageCircle size={48} className="mx-auto mb-4 opacity-50" />
+                        <p>No discussions yet for this lesson.</p>
+                        <p className="text-sm mt-2">Be the first to start a conversation!</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -456,6 +637,7 @@ export default function CourseLearningPage() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+      </div>
     </div>
   );
 }

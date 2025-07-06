@@ -33,12 +33,18 @@ export interface Lesson {
   description: string;
   content: string;
   videoUrl?: string;
-  duration: number; // in minutes
   order: number;
   isPreview: boolean;
-  attachments?: string[];
+  attachments?: AttachmentFile[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface AttachmentFile {
+  name: string;
+  type: string;
+  data: string; // base64 encoded file data
+  size: number;
 }
 
 export interface Enrollment {
@@ -84,13 +90,16 @@ export interface QuizAttempt {
 
 export interface Discussion {
   id: string;
+  lessonId: string;
   courseId: string;
-  lessonId?: string;
   title: string;
   content: string;
   authorId: string;
   authorName: string;
+  authorRole: string;
   replies: DiscussionReply[];
+  isQuestion: boolean;
+  isAnswered: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

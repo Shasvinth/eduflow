@@ -417,6 +417,7 @@ export default function InstructorDashboard() {
                     {/* Quick Actions */}
                     <div className="absolute bottom-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <motion.button
+                        onClick={() => router.push(`/courses/${course.id}/edit`)}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         className="p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-all duration-300"
@@ -424,6 +425,7 @@ export default function InstructorDashboard() {
                         <Edit className="h-4 w-4 text-gray-600" />
                       </motion.button>
                       <motion.button
+                        onClick={() => router.push(`/courses/${course.id}`)}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         className="p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-all duration-300"
@@ -461,6 +463,7 @@ export default function InstructorDashboard() {
                       <Button 
                         size="sm"
                         variant="outline"
+                        onClick={() => router.push(`/courses/${course.id}/edit`)}
                         className="flex-1 bg-white/50 border-white/30 hover:bg-white/70"
                       >
                         <Edit className="h-4 w-4 mr-2" />
@@ -468,6 +471,7 @@ export default function InstructorDashboard() {
                       </Button>
                       <Button 
                         size="sm"
+                        onClick={() => router.push(`/courses/${course.id}`)}
                         className="flex-1 bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white"
                       >
                         <Eye className="h-4 w-4 mr-2" />

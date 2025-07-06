@@ -230,10 +230,18 @@ Password: student@eduflow.lk
 ```
 **Access Level:** Course enrollment, learning interface, progress tracking
 
+### 👨‍💼 **Admin Account**
+```
+Email: admin@eduflow.com
+Password: admin@eduflow.com
+```
+**Access Level:** Platform-wide management, user oversight, system analytics, admin dashboard
+
 ### 🎯 **Quick Testing Flow**
 1. **Sign in as Instructor** → Create/Edit courses → View analytics
 2. **Sign in as Student** → Browse courses → Enroll → Access learning content
-3. **Switch between roles** to experience the complete platform
+3. **Sign in as Admin** → Manage users → Platform analytics → System overview
+4. **Switch between roles** to experience the complete platform
 
 > **Note**: These are demo accounts specifically created for competition evaluation. In production, all data is secured with proper authentication and authorization.
 

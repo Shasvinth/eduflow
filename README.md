@@ -2,8 +2,6 @@
 
 <div align="center">
 
-![EduFlow Banner](https://via.placeholder.com/800x200/4F46E5/FFFFFF?text=EduFlow+LMS)
-
 **Transforming Education Through Technology**
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)](https://nextjs.org/)
@@ -98,29 +96,6 @@ Our platform addresses each challenge systematically:
 - 📈 **Scalability Management** for growing organizations
 - 🔒 **Security & Compliance** with industry standards
 
-## � Application Structure
-
-```
-eduflow/
-├── 🎨 src/
-│   ├── 📱 app/                 # Next.js App Router pages
-│   │   ├── 🏠 page.tsx         # Landing page
-│   │   ├── 🔐 auth/            # Authentication pages
-│   │   ├── 📊 dashboard/       # Role-based dashboards
-│   │   ├── 📚 courses/         # Course management
-│   │   └── 👤 profile/         # User profile management
-│   ├── 🧩 components/          # Reusable UI components
-│   │   ├── 🎨 ui/              # Base UI components
-│   │   ├── 📋 forms/           # Form components
-│   │   └── 📊 charts/          # Data visualization
-│   ├── 🔧 lib/                 # Utilities and configurations
-│   ├── 🌐 contexts/            # React context providers
-│   ├── 🔗 hooks/               # Custom React hooks
-│   └── 📝 types/               # TypeScript type definitions
-├── 🌐 public/                  # Static assets
-├── 🔥 firebase/                # Firebase configuration
-└── 📚 docs/                    # Documentation
-```
 
 ## 🎭 User Roles & Permissions
 

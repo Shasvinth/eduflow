@@ -14,7 +14,6 @@ import {
   Calendar, 
   BookOpen, 
   Award, 
-  Clock,
   Users,
   Star,
   ArrowLeft
@@ -29,7 +28,7 @@ export default function ProfilePage() {
     totalEnrollments: 0,
     completedCourses: 0,
     totalStudents: 0,
-    totalRevenue: 0
+    totalCourses: 0
   });
 
   useEffect(() => {
@@ -69,7 +68,7 @@ export default function ProfilePage() {
             totalEnrollments: enrollmentData.length,
             completedCourses: enrollmentData.filter(e => e.progress === 100).length,
             totalStudents: 0,
-            totalRevenue: 0
+            totalCourses: 0
           });
         } else if (user.role === 'instructor') {
           // Fetch instructor's courses
@@ -88,13 +87,13 @@ export default function ProfilePage() {
           setCreatedCourses(coursesData);
           
           const totalStudents = coursesData.reduce((sum, course) => sum + course.enrolledStudents, 0);
-          const totalRevenue = coursesData.reduce((sum, course) => sum + (course.price * course.enrolledStudents), 0);
+          const totalCourses = coursesData.length;
           
           setStats({
             totalEnrollments: 0,
             completedCourses: 0,
             totalStudents,
-            totalRevenue
+            totalCourses
           });
         }
       } catch (error) {
@@ -229,10 +228,10 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Star size={16} className="text-yellow-500" />
-                        <span className="text-gray-700">Revenue</span>
+                        <BookOpen size={16} className="text-blue-500" />
+                        <span className="text-gray-700">Total Courses</span>
                       </div>
-                      <span className="font-medium text-gray-800">Rs. {stats.totalRevenue.toLocaleString()}</span>
+                      <span className="font-medium text-gray-800">{stats.totalCourses}</span>
                     </div>
                   </>
                 )}
@@ -273,10 +272,6 @@ export default function ProfilePage() {
                             </p>
                             
                             <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                              <div className="flex items-center gap-1">
-                                <Clock size={14} />
-                                <span>{Math.floor(enrollment.course.duration / 60)}h {enrollment.course.duration % 60}m</span>
-                              </div>
                               <div className="flex items-center gap-1">
                                 <Users size={14} />
                                 <span>{enrollment.course.enrolledStudents} students</span>
@@ -364,7 +359,7 @@ export default function ProfilePage() {
                             <span>{course.rating.toFixed(1)}</span>
                           </div>
                           <span className="text-green-600 font-medium">
-                            Rs. {course.price.toLocaleString()}
+                            Free Course
                           </span>
                         </div>
                         

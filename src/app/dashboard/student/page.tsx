@@ -12,7 +12,6 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { 
   BookOpen, 
-  Clock, 
   TrendingUp, 
   Play, 
   CheckCircle
@@ -36,7 +35,7 @@ export default function StudentDashboard() {
   const [stats, setStats] = useState({
     totalCourses: 0,
     completedCourses: 0,
-    totalHours: 0,
+    activeCourses: 0,
     averageProgress: 0
   });
   const [dataLoading, setDataLoading] = useState(true);
@@ -78,7 +77,7 @@ export default function StudentDashboard() {
       // Calculate stats
       const totalCourses = enrollmentsData.length;
       const completedCourses = enrollmentsData.filter(e => e.progress === 100).length;
-      const totalHours = enrollmentsData.reduce((sum, e) => sum + (e.course.duration || 0), 0) / 60;
+      const activeCourses = enrollmentsData.filter(e => e.progress > 0 && e.progress < 100).length;
       const averageProgress = totalCourses > 0 
         ? enrollmentsData.reduce((sum, e) => sum + e.progress, 0) / totalCourses 
         : 0;
@@ -86,7 +85,7 @@ export default function StudentDashboard() {
       setStats({
         totalCourses,
         completedCourses,
-        totalHours: Math.round(totalHours),
+        activeCourses,
         averageProgress: Math.round(averageProgress)
       });
       
@@ -260,13 +259,13 @@ export default function StudentDashboard() {
           >
             <div className="flex items-center justify-between mb-4">
               <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 rounded-xl">
-                <Clock className="h-6 w-6 text-white" />
+                <BookOpen className="h-6 w-6 text-white" />
               </div>
               <span className="text-2xl font-bold text-gray-900">
-                {stats.totalHours}h
+                {stats.activeCourses}
               </span>
             </div>
-            <p className="text-gray-600 text-sm font-medium">Learning Hours</p>
+            <p className="text-gray-600 text-sm font-medium">Active Courses</p>
           </motion.div>
 
           <motion.div 

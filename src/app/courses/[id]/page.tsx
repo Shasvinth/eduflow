@@ -8,7 +8,6 @@ import { db } from '@/lib/firebase';
 import { Course, Enrollment } from '@/types';
 import Image from 'next/image';
 import { 
-  Clock, 
   Users, 
   Star, 
   ArrowLeft, 
@@ -157,10 +156,6 @@ export default function CourseDetailPage() {
                   <span>by {course.instructorName}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock size={16} />
-                  <span>{Math.floor(course.duration / 60)}h {course.duration % 60}m</span>
-                </div>
-                <div className="flex items-center gap-2">
                   <Users size={16} />
                   <span>{course.enrolledStudents} students</span>
                 </div>
@@ -232,7 +227,7 @@ export default function CourseDetailPage() {
               
               <div className="p-6">
                 <div className="text-3xl font-bold text-gray-800 mb-4">
-                  Rs. {course.price.toLocaleString()}
+                  Free Course
                 </div>
                 
                 {enrollment ? (
@@ -290,15 +285,6 @@ export default function CourseDetailPage() {
                     <span className="text-gray-700">Students</span>
                   </div>
                   <span className="font-medium text-gray-800">{course.enrolledStudents}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Clock size={16} className="text-green-500" />
-                    <span className="text-gray-700">Duration</span>
-                  </div>
-                  <span className="font-medium text-gray-800">
-                    {Math.floor(course.duration / 60)}h {course.duration % 60}m
-                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">

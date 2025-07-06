@@ -17,8 +17,6 @@ export interface Course {
   instructorName: string;
   category: string;
   level: 'beginner' | 'intermediate' | 'advanced';
-  price: number;
-  duration: number; // in minutes
   enrolledStudents: number;
   rating: number;
   isPublished: boolean;

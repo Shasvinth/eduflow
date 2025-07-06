@@ -12,7 +12,6 @@ import {
   Search, 
   Filter, 
   Star, 
-  Clock, 
   Users, 
   Play,
   BookOpen,
@@ -127,22 +126,6 @@ export default function Courses() {
     
     return matchesSearch && matchesCategory && matchesLevel;
   });
-
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    if (hours > 0) {
-      return `${hours}h ${mins > 0 ? `${mins}m` : ''}`;
-    }
-    return `${mins}m`;
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-LK', {
-      style: 'currency',
-      currency: 'LKR'
-    }).format(price).replace('LKR', 'Rs.');
-  };
 
   if (loading) {
     return (
@@ -480,28 +463,12 @@ export default function Courses() {
                           className="flex items-center"
                           whileHover={{ scale: 1.05 }}
                         >
-                          <Clock className="h-4 w-4 mr-1 text-gray-600" />
-                          {formatDuration(course.duration || 60)}
-                        </motion.div>
-                        <motion.div 
-                          className="flex items-center"
-                          whileHover={{ scale: 1.05 }}
-                        >
                           <Users className="h-4 w-4 mr-1 text-gray-600" />
-                          {course.enrolledStudents ? course.enrolledStudents.toLocaleString() : '0'}
+                          {course.enrolledStudents ? course.enrolledStudents.toLocaleString() : '0'} students
                         </motion.div>
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <motion.span 
-                            className="text-2xl font-bold text-gray-900"
-                            whileHover={{ scale: 1.1 }}
-                            transition={{ type: "spring", stiffness: 300 }}
-                          >
-                            {formatPrice(course.price || 0)}
-                          </motion.span>
-                        </div>
                         <Link href={`/courses/${course.id}`}>
                           <motion.div
                             whileHover={{ 

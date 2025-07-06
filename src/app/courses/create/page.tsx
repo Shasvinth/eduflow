@@ -17,9 +17,7 @@ import {
   Trash2,
   Eye,
   FileText,
-  Clock,
   Users,
-  DollarSign,
   Tag,
   BarChart3
 } from 'lucide-react';
@@ -38,8 +36,6 @@ export default function CreateCourse() {
     description: '',
     category: 'programming',
     level: 'beginner',
-    price: 0,
-    duration: 0,
     thumbnail: '',
     whatYouWillLearn: [''],
     requirements: ['']
@@ -351,34 +347,6 @@ export default function CreateCourse() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Price (Rs.) *
-                    </label>
-                    <Input
-                      type="number"
-                      value={courseData.price}
-                      onChange={(e) => setCourseData(prev => ({ ...prev, price: Number(e.target.value) }))}
-                      placeholder="0"
-                      className="bg-white/50 border-white/30 focus:bg-white/70"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Duration (minutes) *
-                    </label>
-                    <Input
-                      type="number"
-                      value={courseData.duration}
-                      onChange={(e) => setCourseData(prev => ({ ...prev, duration: Number(e.target.value) }))}
-                      placeholder="0"
-                      className="bg-white/50 border-white/30 focus:bg-white/70"
-                    />
-                  </div>
-                </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Thumbnail URL
@@ -506,24 +474,6 @@ export default function CreateCourse() {
                   </div>
                   <span className="text-sm font-medium text-gray-900 capitalize">
                     {courseData.level}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Clock className="h-4 w-4 mr-2" />
-                    Duration
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">
-                    {Math.floor(courseData.duration / 60)}h {courseData.duration % 60}m
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <DollarSign className="h-4 w-4 mr-2" />
-                    Price
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">
-                    Rs.{courseData.price.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">

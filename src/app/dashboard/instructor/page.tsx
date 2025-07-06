@@ -11,7 +11,6 @@ import { motion } from 'framer-motion';
 import { 
   BookOpen, 
   Users, 
-  DollarSign, 
   Star,
   PlusCircle,
   BarChart3,
@@ -36,7 +35,7 @@ export default function InstructorDashboard() {
   const [stats, setStats] = useState({
     publishedCourses: 0,
     totalStudents: 0,
-    totalRevenue: 0,
+    totalCourses: 0,
     avgRating: 0
   });
   const [dataLoading, setDataLoading] = useState(true);
@@ -69,9 +68,7 @@ export default function InstructorDashboard() {
       // Calculate stats
       const publishedCourses = coursesData.filter(c => c.isPublished).length;
       const totalStudents = coursesData.reduce((sum, course) => sum + (course.enrolledStudents || 0), 0);
-      const totalRevenue = coursesData.reduce((sum, course) => 
-        sum + ((course.enrolledStudents || 0) * (course.price || 0)), 0
-      );
+      const totalCourses = coursesData.length;
       const avgRating = coursesData.length > 0 
         ? coursesData.reduce((sum, course) => sum + (course.rating || 0), 0) / coursesData.length 
         : 0;
@@ -79,7 +76,7 @@ export default function InstructorDashboard() {
       setStats({
         publishedCourses,
         totalStudents,
-        totalRevenue,
+        totalCourses,
         avgRating: Number(avgRating.toFixed(1))
       });
       
@@ -253,13 +250,13 @@ export default function InstructorDashboard() {
           >
             <div className="flex items-center justify-between mb-4">
               <div className="bg-gradient-to-r from-yellow-500 to-amber-500 p-3 rounded-xl">
-                <DollarSign className="h-6 w-6 text-white" />
+                <BookOpen className="h-6 w-6 text-white" />
               </div>
               <span className="text-2xl font-bold text-gray-900">
-                Rs.{stats.totalRevenue.toLocaleString()}
+                {stats.totalCourses}
               </span>
             </div>
-            <p className="text-gray-600 text-sm font-medium">Total Revenue</p>
+            <p className="text-gray-600 text-sm font-medium">Total Courses</p>
           </motion.div>
 
           <motion.div 
@@ -444,8 +441,8 @@ export default function InstructorDashboard() {
                         {course.rating || 0}
                       </div>
                       <div className="flex items-center">
-                        <DollarSign className="h-4 w-4 mr-1" />
-                        Rs.{course.price?.toLocaleString() || 0}
+                        <Users className="h-4 w-4 mr-1" />
+                        {course.enrolledStudents || 0} students
                       </div>
                     </div>
 

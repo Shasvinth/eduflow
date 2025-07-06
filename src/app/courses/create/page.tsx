@@ -17,7 +17,6 @@ import {
   Trash2,
   Eye,
   FileText,
-  Video,
   Clock,
   Users,
   DollarSign,
@@ -43,8 +42,7 @@ export default function CreateCourse() {
     duration: 0,
     thumbnail: '',
     whatYouWillLearn: [''],
-    requirements: [''],
-    lessons: [{ title: '', content: '', duration: 0, type: 'video' }]
+    requirements: ['']
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
@@ -114,29 +112,6 @@ export default function CreateCourse() {
     }));
   };
 
-  const addLesson = () => {
-    setCourseData(prev => ({
-      ...prev,
-      lessons: [...prev.lessons, { title: '', content: '', duration: 0, type: 'video' }]
-    }));
-  };
-
-  const removeLesson = (index: number) => {
-    setCourseData(prev => ({
-      ...prev,
-      lessons: prev.lessons.filter((_, i) => i !== index)
-    }));
-  };
-
-  const updateLesson = (index: number, field: string, value: any) => {
-    setCourseData(prev => ({
-      ...prev,
-      lessons: prev.lessons.map((lesson, i) => 
-        i === index ? { ...lesson, [field]: value } : lesson
-      )
-    }));
-  };
-
   const handleSubmit = async (isDraft = false) => {
     try {
       setIsSubmitting(true);
@@ -153,7 +128,7 @@ export default function CreateCourse() {
         updatedAt: serverTimestamp()
       };
 
-      const docRef = await addDoc(collection(db, 'courses'), course);
+      await addDoc(collection(db, 'courses'), course);
       
       router.push(`/dashboard/instructor`);
     } catch (error) {

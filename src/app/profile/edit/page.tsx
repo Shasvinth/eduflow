@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { doc, updateDoc } from 'firebase/firestore';
 import { updateProfile, updatePassword } from 'firebase/auth';
@@ -239,12 +240,14 @@ export default function ProfileEditPage() {
                 {/* Avatar Preview */}
                 {profileData.avatar && (
                   <div className="flex items-center gap-4 p-4 bg-white/50 rounded-2xl border border-gray-200">
-                    <img
+                    <Image
                       src={profileData.avatar}
                       alt="Avatar preview"
+                      width={64}
+                      height={64}
                       className="w-16 h-16 rounded-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = '/placeholder-avatar.jpg';
+                      onError={() => {
+                        // Handle error - could set a fallback src in state
                       }}
                     />
                     <div>

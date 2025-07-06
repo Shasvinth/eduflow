@@ -21,9 +21,7 @@
 
 **Developer:** Shasvinth Srikanth  
 **Institution:** Royal College Colombo  
-**Email:** shasvinth@example.com  
-**GitHub:** [@shasvinth](https://github.com/shasvinth)  
-**LinkedIn:** [Shasvinth Srikanth](https://linkedin.com/in/shasvinth)
+**Email:** shasvinthsrikanth13@gmail.com.com  
 
 ---
 

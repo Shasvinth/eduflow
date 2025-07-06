@@ -172,19 +172,28 @@ export default function CourseDetailPage() {
             <div className="bg-white/70 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">What You&apos;ll Learn</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  'Master core concepts and fundamentals',
-                  'Build real-world projects',
-                  'Industry best practices',
-                  'Hands-on practical experience',
-                  'Certificate of completion',
-                  'Lifetime access to materials'
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <CheckCircle size={16} className="text-green-500 flex-shrink-0" />
-                    <span className="text-gray-700">{item}</span>
-                  </div>
-                ))}
+                {course.learningOutcomes && course.learningOutcomes.length > 0 ? (
+                  course.learningOutcomes.filter(outcome => outcome.trim() !== '').map((outcome, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <CheckCircle size={16} className="text-green-500 flex-shrink-0" />
+                      <span className="text-gray-700">{outcome}</span>
+                    </div>
+                  ))
+                ) : (
+                  [
+                    'Master core concepts and fundamentals',
+                    'Build real-world projects',
+                    'Industry best practices',
+                    'Hands-on practical experience',
+                    'Certificate of completion',
+                    'Lifetime access to materials'
+                  ].map((item, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <CheckCircle size={16} className="text-green-500 flex-shrink-0" />
+                      <span className="text-gray-700">{item}</span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -192,17 +201,25 @@ export default function CourseDetailPage() {
             <div className="bg-white/70 backdrop-blur-lg rounded-3xl border border-white/20 shadow-xl p-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Requirements</h2>
               <div className="space-y-3">
-                {[
-                  'Basic computer literacy',
-                  'Internet connection for online learning',
-                  'Enthusiasm to learn',
-                  'No prior experience required'
-                ].map((requirement, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
-                    <span className="text-gray-700">{requirement}</span>
-                  </div>
-                ))}
+                {course.requirements && course.requirements.length > 0 ? (
+                  course.requirements.filter(req => req.trim() !== '').map((requirement, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                      <span className="text-gray-700">{requirement}</span>
+                    </div>
+                  ))
+                ) : (
+                  [
+                    'Basic computer literacy',
+                    'Internet connection for online learning',
+                    'Enthusiasm to learn',
+                    'No prior experience required'                  ].map((requirement, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                      <span className="text-gray-700">{requirement}</span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>

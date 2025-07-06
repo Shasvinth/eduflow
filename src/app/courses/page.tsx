@@ -11,12 +11,9 @@ import { motion } from 'framer-motion';
 import { 
   Search, 
   Filter, 
-  Star, 
   Users, 
   Play,
   BookOpen,
-  Heart,
-  Share2,
   User,
   Loader2,
   ChevronDown
@@ -395,44 +392,19 @@ export default function Courses() {
                       
                       {/* Overlay Actions */}
                       <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <motion.button
-                          whileHover={{ 
-                            scale: 1.15,
-                            backgroundColor: "white",
-                            boxShadow: "0 8px 20px rgba(0,0,0,0.15)"
-                          }}
-                          whileTap={{ scale: 0.9 }}
-                          className="p-2.5 bg-white/90 rounded-full shadow-lg hover:bg-white transition-all duration-300 group/heart"
-                        >
-                          <Heart className="h-4 w-4 text-gray-600 group-hover/heart:text-red-500 transition-colors duration-300" />
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ 
-                            scale: 1.15,
-                            backgroundColor: "white",
-                            boxShadow: "0 8px 20px rgba(0,0,0,0.15)"
-                          }}
-                          whileTap={{ scale: 0.9 }}
-                          className="p-2.5 bg-white/90 rounded-full shadow-lg hover:bg-white transition-all duration-300 group/share"
-                        >
-                          <Share2 className="h-4 w-4 text-gray-600 group-hover/share:text-blue-500 transition-colors duration-300" />
-                        </motion.button>
+                        {/* Removed share and rating buttons */}
                       </div>
                     </div>
 
                     {/* Course Content */}
                     <div className="p-6">
-                      <div className="flex items-center justify-between mb-3">
+                      <div className="mb-3">
                         <motion.span 
                           className="text-xs text-gray-700 bg-gray-100 px-2 py-1 rounded-md"
                           whileHover={{ scale: 1.05 }}
                         >
                           {categories.find(c => c.id === course.category)?.name || course.category}
                         </motion.span>
-                        <div className="flex items-center text-sm text-gray-700">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
-                          <span className="font-medium">{course.rating || 4.5}</span>
-                        </div>
                       </div>
 
                       <motion.h3 

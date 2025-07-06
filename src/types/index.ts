@@ -20,6 +20,8 @@ export interface Course {
   enrolledStudents: number;
   rating: number;
   isPublished: boolean;
+  learningOutcomes: string[];
+  requirements: string[];
   createdAt: Date;
   updatedAt: Date;
 }

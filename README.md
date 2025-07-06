@@ -210,6 +210,35 @@ pnpm dev
 http://localhost:3000
 ```
 
+---
+
+## 🔑 Demo Credentials for Judges
+
+**For easy evaluation, please use these pre-configured demo accounts:**
+
+### 👨‍🏫 **Instructor Account**
+```
+Email: instructor@eduflow.lk
+Password: instructor@eduflow.lk
+```
+**Access Level:** Full instructor dashboard, course creation, analytics, student management
+
+### 👨‍🎓 **Student Account**
+```
+Email: student@eduflow.lk
+Password: student@eduflow.lk
+```
+**Access Level:** Course enrollment, learning interface, progress tracking
+
+### 🎯 **Quick Testing Flow**
+1. **Sign in as Instructor** → Create/Edit courses → View analytics
+2. **Sign in as Student** → Browse courses → Enroll → Access learning content
+3. **Switch between roles** to experience the complete platform
+
+> **Note**: These are demo accounts specifically created for competition evaluation. In production, all data is secured with proper authentication and authorization.
+
+---
+
 ## 🔥 Firebase Configuration & Database Schema
 
 ### Firestore Collections Structure

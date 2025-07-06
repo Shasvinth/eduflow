@@ -311,7 +311,11 @@ export default function InstructorDashboard() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">View Analytics</h3>
               <p className="text-gray-600 text-sm mb-4">Track your course performance, student engagement, and revenue insights.</p>
-              <Button variant="outline" className="w-full bg-white/50 border-white/30 hover:bg-white/70">
+              <Button 
+                variant="outline" 
+                onClick={() => router.push('/analytics')}
+                className="w-full bg-white/50 border-white/30 hover:bg-white/70"
+              >
                 View Analytics
               </Button>
             </motion.div>
@@ -326,7 +330,11 @@ export default function InstructorDashboard() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Manage Profile</h3>
               <p className="text-gray-600 text-sm mb-4">Update your instructor profile, bio, and teaching credentials.</p>
-              <Button variant="outline" className="w-full bg-white/50 border-white/30 hover:bg-white/70">
+              <Button 
+                variant="outline" 
+                onClick={() => router.push('/profile/edit')}
+                className="w-full bg-white/50 border-white/30 hover:bg-white/70"
+              >
                 Edit Profile
               </Button>
             </motion.div>
@@ -337,7 +345,10 @@ export default function InstructorDashboard() {
         <motion.div variants={itemVariants}>
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-semibold text-gray-900">My Courses</h2>
-            <Button className="bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white">
+            <Button 
+              onClick={() => router.push('/courses/create')}
+              className="bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white"
+            >
               <PlusCircle className="h-4 w-4 mr-2" />
               Create New Course
             </Button>

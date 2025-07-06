@@ -10,13 +10,8 @@ import { motion } from 'framer-motion';
 import { 
   BookOpen, 
   Users, 
-  DollarSign, 
   UserCheck,
   BarChart3,
-  Settings,
-  Shield,
-  Activity,
-  AlertTriangle,
   CheckCircle
 } from 'lucide-react';
 import { 
@@ -32,7 +27,7 @@ export default function AdminDashboard() {
     totalUsers: 0,
     totalCourses: 0,
     totalEnrollments: 0,
-    monthlyRevenue: 0
+    activeInstructors: 0
   });
   const [dataLoading, setDataLoading] = useState(true);
 
@@ -66,17 +61,15 @@ export default function AdminDashboard() {
       const enrollmentsSnapshot = await getDocs(collection(db, 'enrollments'));
       const totalEnrollments = enrollmentsSnapshot.size;
       
-      // Calculate monthly revenue (simplified - would need more complex logic in real app)
-      const coursesData = coursesSnapshot.docs.map(doc => doc.data());
-      const monthlyRevenue = coursesData.reduce((sum, course) => 
-        sum + ((course.enrolledStudents || 0) * (course.price || 0)), 0
-      );
+      // Calculate active instructors
+      const usersData = usersSnapshot.docs.map(doc => doc.data());
+      const activeInstructors = usersData.filter(user => user.role === 'instructor').length;
       
       setStats({
         totalUsers,
         totalCourses,
         totalEnrollments,
-        monthlyRevenue
+        activeInstructors
       });
       
     } catch (error) {
@@ -122,7 +115,7 @@ export default function AdminDashboard() {
           >
             <div className="relative">
               <div className="w-16 h-16 bg-white/40 backdrop-blur-md rounded-full flex items-center justify-center border border-gray-200">
-                <Shield className="h-8 w-8 animate-pulse text-gray-800" />
+                <BarChart3 className="h-8 w-8 animate-pulse text-gray-800" />
               </div>
               <div className="absolute inset-0 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full opacity-10 animate-pulse"></div>
             </div>
@@ -257,13 +250,13 @@ export default function AdminDashboard() {
           >
             <div className="flex items-center justify-between mb-4">
               <div className="bg-gradient-to-r from-pink-500 to-purple-500 p-3 rounded-xl">
-                <DollarSign className="h-6 w-6 text-white" />
+                <UserCheck className="h-6 w-6 text-white" />
               </div>
               <span className="text-2xl font-bold text-gray-900">
-                Rs.{stats.monthlyRevenue.toLocaleString()}
+                {stats.activeInstructors}
               </span>
             </div>
-            <p className="text-gray-600 text-sm font-medium">Monthly Revenue</p>
+            <p className="text-gray-600 text-sm font-medium">Active Instructors</p>
           </motion.div>
         </motion.div>
 
@@ -273,7 +266,7 @@ export default function AdminDashboard() {
           variants={itemVariants}
         >
           <h2 className="text-2xl font-semibold text-gray-900 mb-6">Admin Tools</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <motion.div
               className="bg-white/60 backdrop-blur-md border border-white/30 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
               whileHover={{ y: -4, scale: 1.02 }}
@@ -284,7 +277,10 @@ export default function AdminDashboard() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">User Management</h3>
               <p className="text-gray-600 text-sm mb-4">Manage user accounts, roles, and permissions across the platform.</p>
-              <Button className="w-full bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white">
+              <Button 
+                onClick={() => router.push('/admin/users')}
+                className="w-full bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white"
+              >
                 Manage Users
               </Button>
             </motion.div>
@@ -299,7 +295,11 @@ export default function AdminDashboard() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Course Management</h3>
               <p className="text-gray-600 text-sm mb-4">Review, approve, and manage all courses on the platform.</p>
-              <Button variant="outline" className="w-full bg-white/50 border-white/30 hover:bg-white/70">
+              <Button 
+                variant="outline" 
+                onClick={() => router.push('/admin/courses')}
+                className="w-full bg-white/50 border-white/30 hover:bg-white/70"
+              >
                 Manage Courses
               </Button>
             </motion.div>
@@ -314,53 +314,12 @@ export default function AdminDashboard() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Analytics & Reports</h3>
               <p className="text-gray-600 text-sm mb-4">View detailed analytics and generate comprehensive reports.</p>
-              <Button variant="outline" className="w-full bg-white/50 border-white/30 hover:bg-white/70">
+              <Button 
+                variant="outline" 
+                onClick={() => router.push('/admin/analytics')}
+                className="w-full bg-white/50 border-white/30 hover:bg-white/70"
+              >
                 View Analytics
-              </Button>
-            </motion.div>
-
-            <motion.div
-              className="bg-white/60 backdrop-blur-md border border-white/30 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
-              whileHover={{ y: -4, scale: 1.02 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 rounded-xl w-fit mb-4">
-                <Settings className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">System Settings</h3>
-              <p className="text-gray-600 text-sm mb-4">Configure platform settings, security, and system preferences.</p>
-              <Button variant="outline" className="w-full bg-white/50 border-white/30 hover:bg-white/70">
-                System Settings
-              </Button>
-            </motion.div>
-
-            <motion.div
-              className="bg-white/60 backdrop-blur-md border border-white/30 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
-              whileHover={{ y: -4, scale: 1.02 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="bg-gradient-to-r from-yellow-500 to-amber-500 p-3 rounded-xl w-fit mb-4">
-                <Shield className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Security Center</h3>
-              <p className="text-gray-600 text-sm mb-4">Monitor security events, manage permissions, and review access logs.</p>
-              <Button variant="outline" className="w-full bg-white/50 border-white/30 hover:bg-white/70">
-                Security Center
-              </Button>
-            </motion.div>
-
-            <motion.div
-              className="bg-white/60 backdrop-blur-md border border-white/30 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300"
-              whileHover={{ y: -4, scale: 1.02 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="bg-gradient-to-r from-indigo-500 to-blue-500 p-3 rounded-xl w-fit mb-4">
-                <Activity className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">System Monitoring</h3>
-              <p className="text-gray-600 text-sm mb-4">Monitor system health, performance metrics, and uptime status.</p>
-              <Button variant="outline" className="w-full bg-white/50 border-white/30 hover:bg-white/70">
-                View Monitoring
               </Button>
             </motion.div>
           </div>
@@ -388,10 +347,10 @@ export default function AdminDashboard() {
               </div>
               
               <div className="flex items-center space-x-3">
-                <AlertTriangle className="h-6 w-6 text-yellow-500" />
+                <CheckCircle className="h-6 w-6 text-yellow-500" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">File Storage</p>
-                  <p className="text-xs text-gray-600">Degraded</p>
+                  <p className="text-sm font-medium text-gray-900">Database</p>
+                  <p className="text-xs text-gray-600">Operational</p>
                 </div>
               </div>
               

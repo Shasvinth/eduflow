@@ -1,6 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { 
   GraduationCap, 
   Users, 
@@ -36,12 +38,14 @@ export default function AboutPage() {
   };
 
   return (
-    <motion.div 
-      className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 pt-24 pb-12"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
+    <>
+      <Header />
+      <motion.div 
+        className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 pt-24 pb-12"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Hero Section */}
         <motion.div 
@@ -216,6 +220,8 @@ export default function AboutPage() {
           </p>
         </motion.div>
       </div>
-    </motion.div>
+      </motion.div>
+      <Footer />
+    </>
   );
 }

@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { 
   BookOpen, 
@@ -349,14 +350,35 @@ export default function CreateCourse() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Thumbnail URL
+                    Course Thumbnail
                   </label>
-                  <Input
-                    value={courseData.thumbnail}
-                    onChange={(e) => setCourseData(prev => ({ ...prev, thumbnail: e.target.value }))}
-                    placeholder="https://example.com/thumbnail.jpg"
-                    className="bg-white/50 border-white/30 focus:bg-white/70"
-                  />
+                  <div className="space-y-3">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            setCourseData(prev => ({ ...prev, thumbnail: reader.result as string }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
+                    />
+                    {courseData.thumbnail && (
+                      <div className="relative w-32 h-20 rounded-lg overflow-hidden">
+                        <Image
+                          src={courseData.thumbnail}
+                          alt="Thumbnail preview"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -497,7 +519,7 @@ export default function CreateCourse() {
                 <li>• Use bullet points to list what students will learn</li>
                 <li>• Keep your course description concise but informative</li>
                 <li>• Choose an appropriate difficulty level for your target audience</li>
-                <li>• Add a high-quality thumbnail to attract students</li>
+                <li>• Add a high-quality thumbnail image to attract students</li>
               </ul>
             </motion.div>
           </div>

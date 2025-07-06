@@ -221,20 +221,28 @@ export default function ProfileEditPage() {
 
                 <div>
                   <label htmlFor="avatar" className="block text-sm font-medium text-gray-700 mb-2">
-                    Avatar URL
+                    Profile Avatar
                   </label>
-                  <input
-                    type="url"
-                    id="avatar"
-                    name="avatar"
-                    value={profileData.avatar}
-                    onChange={handleProfileChange}
-                    className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800"
-                    placeholder="https://example.com/avatar.jpg"
-                  />
-                  <p className="text-sm text-gray-500 mt-1">
-                    Provide a URL to your profile picture
-                  </p>
+                  <div className="space-y-3">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            setProfileData(prev => ({ ...prev, avatar: reader.result as string }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
+                    />
+                    <p className="text-sm text-gray-500">
+                      Upload a profile picture (JPG, PNG, or GIF)
+                    </p>
+                  </div>
                 </div>
 
                 {/* Avatar Preview */}

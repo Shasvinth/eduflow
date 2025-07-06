@@ -49,7 +49,9 @@ export default function Header() {
 
   const navItems = [
     { name: 'Courses', href: '/courses' },
-    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'About', href: '/about' },
+    { name: 'Contact', href: '/contact' },
+    ...(user ? [{ name: 'Dashboard', href: '/dashboard' }] : []),
   ];
 
   return (

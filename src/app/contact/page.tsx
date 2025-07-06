@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { 
   Mail, 
-  MapPin, 
   Phone, 
   Send,
   MessageSquare,
@@ -64,9 +65,11 @@ export default function ContactPage() {
   };
 
   return (
-    <motion.div 
-      className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 pt-24 pb-12"
-      initial="hidden"
+    <>
+      <Header />
+      <motion.div 
+        className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 pt-24 pb-12"
+        initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
@@ -191,8 +194,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-1">Email</h3>
-                    <p className="text-gray-600">hello@eduflow.lk</p>
-                    <p className="text-gray-600">support@eduflow.lk</p>
+                    <p className="text-gray-600">shasvinthsrikanth13@gmail.com</p>
                   </div>
                 </div>
 
@@ -202,19 +204,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-1">Phone</h3>
-                    <p className="text-gray-600">+94 77 123 4567</p>
-                    <p className="text-gray-500 text-sm">Monday - Friday, 9 AM - 6 PM</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center flex-shrink-0">
-                    <MapPin size={20} className="text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-800 mb-1">Address</h3>
-                    <p className="text-gray-600">Royal College Colombo</p>
-                    <p className="text-gray-600">Colombo 07, Sri Lanka</p>
+                    <p className="text-gray-600">+94 77 044 3274</p>
                   </div>
                 </div>
               </div>
@@ -300,6 +290,8 @@ export default function ContactPage() {
           </button>
         </motion.div>
       </div>
-    </motion.div>
+      </motion.div>
+      <Footer />
+    </>
   );
 }

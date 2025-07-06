@@ -296,7 +296,10 @@ export default function InstructorDashboard() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Create New Course</h3>
               <p className="text-gray-600 text-sm mb-4">Start building your next course and share your knowledge with students worldwide.</p>
-              <Button className="w-full bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white">
+              <Button 
+                onClick={() => router.push('/courses/create')}
+                className="w-full bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white"
+              >
                 Create Course
               </Button>
             </motion.div>
@@ -360,7 +363,10 @@ export default function InstructorDashboard() {
                 <p className="text-gray-700 mb-6">
                   Share your expertise with the world. Create engaging courses and start teaching today.
                 </p>
-                <Button className="bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white">
+                <Button 
+                  onClick={() => router.push('/courses/create')}
+                  className="bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white"
+                >
                   <PlusCircle className="h-4 w-4 mr-2" />
                   Create Course
                 </Button>

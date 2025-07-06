@@ -1,7 +1,7 @@
 "use client"
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,16 +10,38 @@ import {
   X, 
   BookOpen, 
   User, 
-  LogOut
+  LogOut,
+  ChevronDown,
+  Settings,
+  BarChart3
 } from 'lucide-react';
 
 export default function Header() {
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsProfileDropdownOpen(false);
+      }
+    }
+
+    if (isProfileDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isProfileDropdownOpen]);
 
   const handleLogout = async () => {
     try {
       await logout();
+      setIsProfileDropdownOpen(false);
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -77,26 +99,65 @@ export default function Header() {
           {/* Auth Actions */}
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
-              <div className="flex items-center space-x-4">
-                <Link href="/dashboard">
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="text-gray-700 hover:text-black hover:bg-gray-100"
-                  >
-                    <User className="w-4 h-4 mr-2" />
-                    Profile
-                  </Button>
-                </Link>
+              <div className="relative" ref={dropdownRef}>
                 <Button 
-                  onClick={handleLogout}
+                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                   variant="ghost" 
                   size="sm"
-                  className="text-gray-700 hover:text-black hover:bg-gray-100"
+                  className="text-gray-700 hover:text-black hover:bg-gray-100 flex items-center gap-2"
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Sign Out
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline">{user.displayName || 'Profile'}</span>
+                  <ChevronDown className="w-3 h-3" />
                 </Button>
+
+                <AnimatePresence>
+                  {isProfileDropdownOpen && (
+                    <motion.div
+                      className="absolute right-0 mt-2 w-56 bg-white/90 backdrop-blur-lg rounded-2xl border border-gray-200/50 shadow-xl"
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div className="p-2">
+                        <div className="px-3 py-2 border-b border-gray-200/50 mb-2">
+                          <p className="text-sm font-medium text-gray-800">{user.displayName}</p>
+                          <p className="text-xs text-gray-600">{user.email}</p>
+                          <p className="text-xs text-blue-600 capitalize">{user.role}</p>
+                        </div>
+                        
+                        <Link href="/dashboard">
+                          <button 
+                            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-xl transition-colors"
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                          >
+                            <BarChart3 className="w-4 h-4" />
+                            Dashboard
+                          </button>
+                        </Link>
+                        
+                        <Link href="/profile/edit">
+                          <button 
+                            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-xl transition-colors"
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                          >
+                            <Settings className="w-4 h-4" />
+                            Edit Profile
+                          </button>
+                        </Link>
+                        
+                        <button 
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors mt-1"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               <div className="flex items-center space-x-4">
@@ -166,8 +227,18 @@ export default function Header() {
                           className="w-full justify-start text-gray-700 hover:text-black hover:bg-gray-100"
                           onClick={() => setIsMenuOpen(false)}
                         >
-                          <User className="w-4 h-4 mr-2" />
-                          Profile
+                          <BarChart3 className="w-4 h-4 mr-2" />
+                          Dashboard
+                        </Button>
+                      </Link>
+                      <Link href="/profile/edit">
+                        <Button 
+                          variant="ghost" 
+                          className="w-full justify-start text-gray-700 hover:text-black hover:bg-gray-100"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <Settings className="w-4 h-4 mr-2" />
+                          Edit Profile
                         </Button>
                       </Link>
                       <Button 
@@ -176,7 +247,7 @@ export default function Header() {
                           setIsMenuOpen(false);
                         }}
                         variant="ghost" 
-                        className="w-full justify-start text-gray-700 hover:text-black hover:bg-gray-100"
+                        className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
                         <LogOut className="w-4 h-4 mr-2" />
                         Sign Out

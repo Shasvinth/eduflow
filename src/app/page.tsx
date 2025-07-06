@@ -9,7 +9,6 @@ import {
   Users,
   Award,
   ArrowRight,
-  Play,
   CheckCircle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -73,7 +72,7 @@ export default function Home() {
           </motion.p>
 
           <motion.div 
-            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+            className="flex justify-center items-center"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
@@ -98,27 +97,6 @@ export default function Home() {
                   </span>
                 </Button>
               </Link>
-            </motion.div>
-            
-            <motion.div
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-            >
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 px-10 py-6 text-lg font-medium rounded-2xl backdrop-blur-sm bg-white/50 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group"
-              >
-                <span className="flex items-center gap-3">
-                  <motion.div
-                    className="group-hover:scale-110 transition-transform duration-300"
-                  >
-                    <Play className="w-5 h-5" />
-                  </motion.div>
-                  Watch Demo
-                </span>
-              </Button>
             </motion.div>
           </motion.div>
         </div>
